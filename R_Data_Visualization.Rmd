@@ -1,0 +1,349 @@
+---
+title: "Data Visualization"
+author: "Matt Steele"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cosmo
+---
+
+
+```{r}
+#| label: working directory
+#| include: false
+
+setwd("C:/Users/Matt/Documents/GitHub/r_data_visualization_presentation_fall23")
+
+
+```
+
+<br />
+
+```{r}
+#| label: load tidyverse
+#| eval: false
+#| include: false
+
+install.packages("tidyverse")
+library(tidyverse)
+
+
+```
+
+<br />
+
+------------------------------------------------------------------------
+
+# Part 1: Introduction to GGPLOT2
+
+visualize your data with ggplot
+
+-   [ggplot package]("https://ggplot2.tidyverse.org/")
+
+
+## Grammar of Graphics
+
+ggplot allows you to visualize data by using three components: *a data set*, *a coordinate systems*, and *geoms*.
+
+1.    Set the plot
+2.    Set the coordinates
+3.    Set the shape
+
+<br />
+
+------------------------------------------------------------------------
+
+# Part 2: Setting the Plot and Coordinates
+
+## Parameters
+
+in ggplot you set you parameters or the variables you want to plot with
+the **aesthetics** argument.
+
+```{r}
+#| label: aes
+#| eval: false
+
+# load covid data
+
+covid19_df <- read_csv("covid19_time_series.csv")
+covid19_df
+
+# filter covid19 data frame to West Virginia
+
+covid19_wv <- covid19_df |> 
+  filter(State == "West Virginia") |> 
+  group_by(Date) |> 
+  summarise(Total = sum(Total))
+
+covid19_wv
+
+
+# set the parameters
+
+covid_wv.line <- ggplot(covid19_wv, aes(Date, Total))
+covid_wv.line
+
+
+```
+
+<br />
+
+------------------------------------------------------------------------
+
+# Part 3: Setting the plot shape
+
+the **geom\_** or **stat\_** functions allows you to choose the shape.
+We are going start by plotting a line graph so I will use
+**geom_line()**.
+
+```         
+We combine elements in ggplot using the (+) operator 
+```
+
+```{r}
+#| label: geom_line
+#| eval: false
+
+covid_wv.line +
+  geom_line()
+  
+
+```
+
+<br />
+
+------------------------------------------------------------------------
+
+# Part 4: Adding additional features
+
+<br />
+
+---
+
+## Change color, size, and transparency of elements
+
+|                           |                     |
+|---------------------------|---------------------|
+| **fill =** or **color =** | change colors       |
+| **size =**                | change size         |
+| **alpha =**               | change transparency |
+
+```{r}
+#| label: color, shape, transparency
+#| eval: false
+
+# add color
+
+covid_wv.line +
+  geom_line(color = "skyblue", show.legend = FALSE, size = 3, alpha = .75) +
+  theme_classic()
+
+# you can also adjust the background with built-in themes
+
+
+```
+
+<br />
+
+---
+
+
+## Labeling your plot
+
+the labs element will allow you to add or change labels in the plot
+
+```{r}
+#| label: labs
+#| eval: false
+
+covid_wv.line + 
+  geom_line(color = "skyblue", show.legend = FALSE, size = 3, alpha = .75) +
+  theme_classic() + 
+  labs( 
+    title = "COVID19 Count", 
+    subtitle = "West Virginia | 2020", 
+    x = NULL,
+    y = NULL )
+
+
+```
+
+<br />
+
+---
+
+## Change date elements
+
+the **scale_x_date** element allows you to adjust your date elements on the x axis
+
+[Date Formats - strptime](https://rdrr.io/r/base/strptime.html)
+
+```{r}
+#| label: scale_x_date
+#| eval: false
+
+covid_wv.line + 
+  geom_line(color = "skyblue", show.legend = FALSE, size = 3, alpha = .75) +
+  theme_classic() + 
+  labs( 
+    title = "COVID19 Count", 
+    subtitle = "West Virginia | 2020", 
+    x = NULL,
+    y = NULL ) +
+  scale_x_date(date_breaks = "3 weeks", 
+               date_labels = "%b %d" )
+  
+```
+<br />
+
+---
+
+## Creating a Histogram
+
+
+```{r}
+#| label: histogram
+#| eval: false
+
+
+# load customer reviews data frame
+
+reviews_df <- read_csv("customer_reviews.csv")
+
+
+reviews_hist <- reviews_df |> 
+  drop_na(Department_Name)
+
+# create a histogram
+
+reviews.hist <- ggplot(reviews_hist, aes(Age))
+
+reviews.hist +
+  geom_histogram()
+
+# bin and add some color
+
+reviews.hist +
+  geom_histogram(bins = 30, color = "coral", fill = "#ffbf00", alpha = .5)
+
+
+```
+
+<br />
+
+---
+
+## Adjust additional elements in the plot with theme
+
+the **theme** element allows you adjust additional aspects of your plot. In this example we will change the font size and colors of the axis text.
+
+
+```{r}
+#| label: theme options
+#| eval: false
+
+# using the theme options
+
+reviews.hist +
+  geom_histogram(bins = 30, color = "coral", fill = "#ffbf00", alpha = .5) +
+  theme_light() +
+  theme(axis.text = element_text(size = 4), axis.title = element_text(color = "#097969", size = 14)) +
+  labs(
+    y = NULL
+  ) 
+
+```
+
+<br />
+
+---
+
+## Add a reference line with geom_vline or geom_hline
+
+```{r}
+#| label: vline
+#| eval: false
+
+# add a reference line
+
+reviews.hist +
+  geom_vline(xintercept = 55, color = "#afe1af", size = 5) +
+  geom_histogram(bins = 30, color = "coral", fill = "#ffbf00", alpha = .9) +
+  theme_light() +
+  theme(axis.text = element_text(size = 4), axis.title = element_text(color = "#097969", size = 14)) +
+  labs(
+    y = NULL
+  ) 
+
+```
+
+
+<br />
+
+---
+
+## Seperate by categorical variables with facets
+
+```{r}
+#| label: facets
+#| eval: false
+
+
+# separate by categorical data with facets
+
+reviews.hist +
+  geom_histogram(bins = 30, color = "coral", fill = "#ffbf00", alpha = .9) +
+  theme_light() +
+  theme(axis.text = element_text(size = 4), axis.title = element_text(color = "#097969", size = 14)) +
+  labs(
+    y = NULL
+  ) + 
+  facet_wrap(facets = vars(Department_Name), ncol = 3)
+
+```
+
+<br />
+
+------------------------------------------------------------------------
+
+# Bar Graph
+
+-   [Color Brewer](https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3)
+
+```{r}
+#| label: bar graph
+#| eval: false
+
+
+# load demographics data
+
+demographics_df <- read_csv("demographics.csv")
+demographics_df
+
+# you can order the bar graph using the fct_reorder function from Forcats
+
+demographics.col <- ggplot(demographics_df, aes(fct_reorder(carcat, income), income))
+
+# you can color plots by categorical variables using the fill or color option followed by the variables name in the aes() argument
+
+demographics.col +
+  geom_col(aes(fill = ed)) +
+  scale_fill_brewer(palette = "Paired") + # color brewer built in color pattern
+  labs(
+    fill = "Education Level",
+    title = "Car Category by Income",
+    x = NULL
+    ) +
+  scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale()) # change the value of the y scale
+  )
+
+# difference between geom_bar and geom_col
+
+demographics.bar <- ggplot(demographics_df, aes(inccat))
+
+demographics.bar + 
+  geom_bar() +
+  theme_minimal()
+
+```
