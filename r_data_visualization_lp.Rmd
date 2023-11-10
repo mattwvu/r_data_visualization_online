@@ -35,7 +35,7 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
-# Part 1: Introduction to GGPLOT2
+# GGPLOT2
 
 visualize your data with ggplot
 
@@ -45,25 +45,34 @@ visualize your data with ggplot
 
 ## Grammar of Graphics
 
-ggplot allows you to visualize data by using three components: *a data set*, *a coordinate systems*, and *geoms*.
+the grammar of graphics is implemented through a layered approach to building plots. 
 
-1.    Set the plot
-2.    Set the coordinates
-3.    Set the shape
+### Required
+
+1. Data: The raw data that you want to visualize.
+2. Aesthetic Mapping (aes()): Defines how variables in the data map to visual properties like position, color, size, shape, etc.
+3. Geometric Objects (geom_*): Represent the actual geometric shapes on the plot (e.g., points, lines, bars).
+
+### Optional
+
+4. Coordinate System (coord_*):Defines the coordinate system for the plot (e.g., Cartesian, polar).
+5. Faceting (facet_*): Divides the plot into subplots based on one or more categorical variables.
+6. Themes (theme_*): Customize the appearance of the plot, including titles, labels, and overall aesthetics.
 
 <br />
 
 ------------------------------------------------------------------------
 
-# Part 2: Setting the Plot and Coordinates
+# Line graph
 
-## Parameters
+lets create a line graph that tracks approval ratings for the Supreme Court of the United States over time.
 
-in ggplot you set you parameters or the variables you want to plot with
-the **aesthetics** argument.
+<br />
+
+## Data
 
 ```{r}
-#| label: aes
+#| label: load data
 #| eval: false
 
 # load scotus approval data
@@ -78,30 +87,40 @@ scotus_yg <- scotus |>
 scotus_yg
 
 
-# set the parameters and coordinates
-
-scotus.line <- ggplot(scotus_yg, aes(date, per_yes))
-
-# calling that object will givve us an empty plot
-
-
-scotus.line
-
-
 ```
 
 <br />
 
+---
+
+## Aesthetic Mapping (aes())
+
+next we are going to set the variables that will use by using the [ggplot function](https://ggplot2.tidyverse.org/reference/ggplot.html) along with the [aes function](https://ggplot2.tidyverse.org/reference/aes.html)
+
+
+```{r}
+#| label: aes
+#| eval: false
+
+# set the parameters and coordinates
+
+scotus.line <- ggplot(scotus_yg, aes(date, per_yes))
+
+# calling that object will give us an empty plot
+
+
+scotus.line
+
+```
+
+
 ------------------------------------------------------------------------
 
-# Part 3: Setting the plot shape
+## Geometric Objects (geom_*)
 
-the **geom\_** or **stat\_** functions allows you to choose the shape.
-We are going start by plotting a line graph so I will use
-**geom_line()**.
+choose the plot that we want to use for our visualization using the [geom_* element](https://ggplot2.tidyverse.org/reference/index.html#geoms)
 
-[Plots Cheatsheet](https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf)
-
+- [Geom Cheatsheet](https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf)
 
 ```         
 We combine elements in ggplot using the (+) operator 
@@ -121,18 +140,15 @@ scotus.line +
 
 ------------------------------------------------------------------------
 
-# Part 4: Adding additional features
-
-<br />
-
-
-## Change color, size, and transparency of elements
+## Theme: Color, Geom Size, Transparancy
 
 |                           |                     |
 |---------------------------|---------------------|
 | **fill =** or **color =** | change colors       |
 | **size =**                | change size         |
 | **alpha =**               | change transparency |
+
+<br />
 
 ```{r}
 #| label: color, shape, transparency
@@ -156,7 +172,7 @@ scotus.line +
 ---
 
 
-## Labeling your plot
+## Theme: Labels
 
 the [labs element](https://ggplot2.tidyverse.org/reference/labs.html?q=labs) will allow you to add or change labels in the plot
 
@@ -181,7 +197,7 @@ scotus.line +
 
 ---
 
-## Built-in Themes
+## Themes: Built-in
 
 ggplot has [built-in themes](https://ggplot2.tidyverse.org/reference/index.html#themes) with pre-set settings for you 
 
@@ -208,8 +224,7 @@ scotus.line +
 
 ---
 
-
-## Customizing themes
+## Themes: Customize
 
 the [theme element](https://ggplot2.tidyverse.org/reference/theme.html) will allow you to customize the appearance of axes, legends, and labels
 
@@ -236,7 +251,7 @@ scotus.line +
 
 ---
 
-## Scales
+## Theme: Scales
 
 the [scales element](https://ggplot2.tidyverse.org/reference/index.html#scales) allows you to fine-tune and adjust the mapping/scale of labels, breaks, and legends
 
@@ -321,9 +336,9 @@ Additionally you can use the export options in RStudio's Plot tab in the Misc Pa
 ---
 
 
-# Histogram
+## Histogram Graph
 
-the [histogram plot](https://ggplot2.tidyverse.org/reference/geom_histogram.html) allows you to see the distribution of a continuous (dbl or num) variable
+the [histogram geom](https://ggplot2.tidyverse.org/reference/geom_histogram.html) allows you to see the distribution of a continuous (dbl or num) variable
 
 ```{r}
 #| label: histogram
@@ -373,7 +388,7 @@ demo.hist +
 
 ---
 
-## Change color, size, and transparency of elements
+## Theme: Color, Geom Size, Transparancy
 
 |                           |                     |
 |---------------------------|---------------------|
@@ -410,7 +425,9 @@ The order that the elements appear on the plot is dictated by its position in yo
 ---
 
 
-## Reference line 
+## Mutliple Geoms
+
+We can add multiple geoms into a plot by adding theme as their own element
 
 the [geom_vline/geom_hline element](https://ggplot2.tidyverse.org/reference/geom_abline.html) allows you to add a reference line to your plot
 
